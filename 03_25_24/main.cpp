@@ -119,5 +119,7 @@ int main()
 
     // lecture activity take the code from lines 74 - 114 change it to use myOuputFile instead of cout.
 
+    // NOTE: string concatenation str1 + " " + str2
+
     return 0;
 }
