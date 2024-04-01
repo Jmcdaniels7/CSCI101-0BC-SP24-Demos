@@ -19,7 +19,11 @@ int main()
         std::cout << "The program will now exit." << std::endl;
         return 0;
     }
-    else if (userNum > 100)
+    else if (1 <= userNum && userNum <= 100)
+    {
+        std::cout << "You entered a number in range. The greater number will win!" << std::endl;
+    }
+    else
     {
         std::cout << "You entered a number that is not between 1 and 100." << std::endl;
         std::cout << "You will be given a value of 1 for being a cheater!" << std::endl;
@@ -72,6 +76,10 @@ int main()
 
     bool x = 1.0 == 3.0 / 7.0 + 2.0 / 7.0 + 2.0 / 7.0;
     std::cout << 3.0 / 7.0 + 2.0 / 7.0 + 2.0 / 7.0 << std::endl;
+    if (userNum = 3.0 / 7.0 + 2.0 / 7.0 + 2.0 / 7.0)
+    {
+        std::cout << 3.0 / 7.0 + 2.0 / 7.0 + 2.0 / 7.0 << std::endl;
+    }
 
     return 0;
 }
