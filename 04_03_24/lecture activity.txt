@@ -1,0 +1,52 @@
+int a = 27;
+int b = 47;
+int c = -5;
+int d = a + b + c;
+
+2F1B
+3FA0
+2F2F
+3FB0
+2FFB
+3FC0
+1AA0
+1BB0
+1CC0
+5DAB
+5DDC
+3DD0
+C000
+
+Lecture Activity
+int a = -48;
+int b = 63;
+int c = -41;
+int d = a + b + c - 19 = a + b + c + (-19);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+two's complement
+-5 
+5 = 0000 0101
+complement 1111 1010
+add 1 1111 1011 FB
+
+
+
+
