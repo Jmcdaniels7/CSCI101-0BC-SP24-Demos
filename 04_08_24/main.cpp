@@ -13,6 +13,7 @@ int main()
     int calDay = 0;
     double sum = 0;
     int count = 0;
+    int topCal = 0, nextTopCal = 0, lowCal = 0;
 
     /*  std::cout << "How many days to you want to enter calorie data for? ";
      std::cin >> numDays;
@@ -26,14 +27,14 @@ int main()
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-        else if (numDays < 0)
+        else if (numDays < 3)
         {
             std::cout << "The number of days must be positive." << std::endl;
         }
         std::cout << "How many days to you want to enter calorie data for? ";
         std::cin >> numDays;
         std::cout << std::endl;
-    } while (!std::cin || numDays < 0);
+    } while (!std::cin || numDays < 3);
 
     /* while (count < numDays)
     { */
@@ -57,6 +58,21 @@ int main()
             std::cin >> calDay;
         }
         sum += calDay; // sum = sum + calDay;
+        if (calDay > topCal)
+        {
+            lowCal = nextTopCal;
+            nextTopCal = topCal;
+            topCal = calDay;
+        }
+        else if (calDay > nextTopCal)
+        {
+            lowCal = nextTopCal;
+            nextTopCal = calDay;
+        }
+        else if (calDay > lowCal)
+        {
+            lowCal = calDay;
+        }
         // count++;       // count = count + 1;
     }
 
