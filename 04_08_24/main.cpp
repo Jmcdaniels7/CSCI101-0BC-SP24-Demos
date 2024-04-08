@@ -2,6 +2,9 @@
 #include <cctype>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
+#include <fstream>
+#include <iomanip>
 
 int main()
 {
@@ -14,29 +17,41 @@ int main()
     std::cout << "How many days to you want to enter calorie data for? ";
     std::cin >> numDays;
     std::cout << std::endl;
-    if (!std::cin)
+    while (!std::cin || numDays < 0)
     {
-        std::cout << "You did not enter a number. The program will now exit." << std::endl;
-        return 0;
+        if (!std::cin)
+        {
+            std::cout << "You did not enter a number. " << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        else
+        {
+            std::cout << "The number of days must be positive." << std::endl;
+        }
+        std::cout << "How many days to you want to enter calorie data for? ";
+        std::cin >> numDays;
+        std::cout << std::endl;
     }
-    if (numDays < 0)
-    {
-        std::cout << "The number of days must be positive. The program will now exit." << std::endl;
-        return 0;
-    }
+
     while (count < numDays)
     {
         std::cout << "Enter the number of calories for day #" << count + 1 << ": ";
         std::cin >> calDay;
-        if (!std::cin)
+        while (!std::cin || calDay < 0)
         {
-            std::cout << "You did not enter a number. The program will now exit." << std::endl;
-            return 0;
-        }
-        if (calDay < 0)
-        {
-            std::cout << "The number of calories must be positive. The program will now exit." << std::endl;
-            return 0;
+            if (!std::cin)
+            {
+                std::cout << "You did not enter a number. " << std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+            else
+            {
+                std::cout << "The number of calories must be positive. " << std::endl;
+            }
+            std::cout << "Enter the number of calories for day #" << count + 1 << ": ";
+            std::cin >> calDay;
         }
         sum += calDay; // sum = sum + calDay;
         count++;       // count = count + 1;
@@ -49,10 +64,12 @@ int main()
     std::cout << "Do you want to play? ";
     std::cin >> playGame;
     playGame = toupper(playGame);
-    if (playGame != 'Y' && playGame != 'N')
+    while (playGame != 'Y' && playGame != 'N')
     {
         std::cout << "I do not understand. I was expecting Y or N." << std::endl;
-        return 0;
+        std::cout << "Do you want to play? ";
+        std::cin >> playGame;
+        playGame = toupper(playGame);
     }
     while (playGame != 'N')
     {
@@ -64,6 +81,21 @@ int main()
         {
             std::cout << "Guess the number between 1 and 100: ";
             std::cin >> guess;
+            while (!std::cin || guess < 1 || guess > 100)
+            {
+                if (!std::cin)
+                {
+                    std::cout << "You did not enter a number. " << std::endl;
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                }
+                else
+                {
+                    std::cout << "You need to guess a number between 1 and 100." << std::endl;
+                }
+                std::cout << "Guess the number between 1 and 100: ";
+                std::cin >> guess;
+            }
             if (guess == winner)
             {
                 std::cout << "Congrats you guessed correctly!" << std::endl;
@@ -81,12 +113,40 @@ int main()
         std::cout << "Do you want to play again? ";
         std::cin >> playGame;
         playGame = toupper(playGame);
-        if (playGame != 'Y' && playGame != 'N')
+        while (playGame != 'Y' && playGame != 'N')
         {
             std::cout << "I do not understand. I was expecting Y or N." << std::endl;
-            return 0;
+            std::cout << "Do you want to play? ";
+            std::cin >> playGame;
+            playGame = toupper(playGame);
         }
     }
+
+    std::ifstream order;
+    order.open("order.txt");
+
+    char prod;
+    int quantity;
+
+    std::cout << "+" << std::setw(5) << std::setfill('-') << "-"
+              << "+" << std::setw(10) << "-"
+              << "+" << std::endl;
+    std::cout << "|" << std::setw(5) << std::setfill(' ') << std::left << "Prod"
+              << "|" << std::setw(10) << "Quantity"
+              << "|" << std::endl;
+    while (!order.eof())
+    {
+        order >> prod >> quantity;
+        std::cout << "+" << std::setw(5) << std::setfill('-') << "-"
+                  << "+" << std::setw(10) << "-"
+                  << "+" << std::endl;
+        std::cout << "|" << std::setw(5) << std::setfill(' ') << std::left << prod
+                  << "|" << std::setw(10) << quantity
+                  << "|" << std::endl;
+    }
+    std::cout << "+" << std::setw(5) << std::setfill('-') << "-"
+              << "+" << std::setw(10) << "-"
+              << "+" << std::endl;
 
     return 0;
 }
