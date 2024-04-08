@@ -14,27 +14,30 @@ int main()
     double sum = 0;
     int count = 0;
 
-    std::cout << "How many days to you want to enter calorie data for? ";
-    std::cin >> numDays;
-    std::cout << std::endl;
-    while (!std::cin || numDays < 0)
+    /*  std::cout << "How many days to you want to enter calorie data for? ";
+     std::cin >> numDays;
+     std::cout << std::endl; */
+    do
     {
+
         if (!std::cin)
         {
             std::cout << "You did not enter a number. " << std::endl;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-        else
+        else if (numDays < 0)
         {
             std::cout << "The number of days must be positive." << std::endl;
         }
         std::cout << "How many days to you want to enter calorie data for? ";
         std::cin >> numDays;
         std::cout << std::endl;
-    }
+    } while (!std::cin || numDays < 0);
 
-    while (count < numDays)
+    /* while (count < numDays)
+    { */
+    for (count = 0; count < numDays; count++)
     {
         std::cout << "Enter the number of calories for day #" << count + 1 << ": ";
         std::cin >> calDay;
@@ -54,7 +57,7 @@ int main()
             std::cin >> calDay;
         }
         sum += calDay; // sum = sum + calDay;
-        count++;       // count = count + 1;
+        // count++;       // count = count + 1;
     }
 
     std::cout << "The average number of calories burned is " << sum / numDays << std::endl;
@@ -77,7 +80,7 @@ int main()
         int winner = rand() % 100 + 1;
         int guess = 0;
         bool isGuessed = false;
-        while (!isGuessed)
+        while (guess != winner)
         {
             std::cout << "Guess the number between 1 and 100: ";
             std::cin >> guess;
@@ -100,6 +103,7 @@ int main()
             {
                 std::cout << "Congrats you guessed correctly!" << std::endl;
                 isGuessed = true;
+                continue;
             }
             else if (guess < winner)
             {
@@ -112,6 +116,8 @@ int main()
         }
         std::cout << "Do you want to play again? ";
         std::cin >> playGame;
+        if (playGame == 'N' || playGame == 'Y')
+            continue;
         playGame = toupper(playGame);
         while (playGame != 'Y' && playGame != 'N')
         {
