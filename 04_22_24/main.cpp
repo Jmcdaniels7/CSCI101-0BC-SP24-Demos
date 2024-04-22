@@ -14,10 +14,16 @@ enum userTaskType
     DOCS,
     EVERYTHING
 };
+namespace myNamespace
+{
+    int testfunc(int x);
+}
+// using namespace myNamespace;
 
 userTaskType inputUserTask();
 void resetStream();
 std::string outputUserTask(userTaskType theTask);
+void testfunc(int x, int y = 7);
 
 // lecture activity make a fish enum with at least 3 kinds of fish
 // create an input function
@@ -34,6 +40,8 @@ int main()
     std::cout << userTask << std::endl; // outputs the integer that is aliased to the enum value name
     std::cout << outputUserTask(userTask) << std::endl;
     // userTaskType userTask2 = userTask + 1;
+
+    testfunc(16);
 
     return 0;
 }
@@ -141,4 +149,17 @@ std::string outputUserTask(userTaskType theTask)
         userTaskStr = "Unknown task";
     }
     return userTaskStr;
+}
+
+void testfunc(int x, int y)
+{
+    if (x > y)
+        std::cout << x;
+    else
+        std::cout << y;
+}
+
+int myNamespace::testfunc(int x)
+{
+    return 10 * x;
 }
