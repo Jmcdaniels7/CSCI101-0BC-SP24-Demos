@@ -2,17 +2,44 @@
 #include <limits>
 #include <cmath>
 
-const int LIST_SIZE = 100;
+const int LIST_SIZE = 10;
 void resetStream();
 void binNumConvert();
+// write a loop using the list in main that finds the sum and average of the numbers
 
 int main()
 {
-
+    int list[LIST_SIZE];
     // standard array processing for loop
-    /*  for (int i = 0; i < LIST_SIZE; i++)
-     {
-     } */
+    for (int i = 0; i < LIST_SIZE; i++)
+    {
+        list[i] = 0;
+    }
+    for (int i = 0; i < LIST_SIZE; i++)
+    {
+        std::cout << "Enter a number: ";
+        std::cin >> list[i];
+        while (!std::cin)
+        {
+            resetStream();
+            std::cout << "Enter a number: ";
+            std::cin >> list[i];
+        }
+    }
+    for (int i = 0; i < LIST_SIZE; i++)
+    {
+        std::cout << list[i] << std::endl;
+    }
+
+    int largestPos = 0;
+    for (int i = 1; i < LIST_SIZE; i++)
+    {
+        if (list[largestPos] < list[i])
+        {
+            largestPos = i;
+        }
+    }
+    std::cout << "The largest number is " << list[largestPos] << " at position " << largestPos << std::endl;
 
     return 0;
 }
