@@ -2,6 +2,9 @@
 #include <limits>
 #include <cmath>
 #include <string>
+#include <fstream>
+#include <algorithm>
+
 enum userTaskType
 {
     ANDROID_STUDIO,
@@ -47,6 +50,7 @@ int main()
     int list[LIST_SIZE];
     int numElem = 0;
     // standard array processing for loop
+    std::string word;
     for (int i = 0; i < LIST_SIZE; i++)
     {
         list[i] = 0;
@@ -76,6 +80,13 @@ int main()
 
     userTaskType userTask = ANDROID_STUDIO;
     std::cout << userTask << " " << taskToStr[userTask] << std::endl;
+    std::cout << "Enter a word: ";
+    std::cin >> word;
+    std::string wordCpy = word;
+    std::transform(word.begin(), word.end(), wordCpy.begin(), ::tolower);
+    std::ofstream outFile;
+    outFile.open(wordCpy + ".txt");
+    outFile << userTask << std::endl;
 
     return 0;
 }
