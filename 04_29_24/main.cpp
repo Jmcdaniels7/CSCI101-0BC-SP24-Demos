@@ -5,6 +5,9 @@
 #include <cctype>
 #include <fstream>
 #include <algorithm>
+#include <cmath>
+
+// lecture activity copy the list of includes from this program and document what they are used for (what comes from them)
 
 const int TOTAL_COLORS = 13;
 
