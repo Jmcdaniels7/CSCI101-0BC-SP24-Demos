@@ -97,8 +97,10 @@ int main()
         std::string lnameCpy = carOrder.cusLastName;
         std::transform(carOrder.cusLastName.begin(), carOrder.cusLastName.end(), lnameCpy.begin(), ::tolower);
         fileOut.open(lnameCpy + ".txt");
+        printCarOrder(fileOut, carOrder);
+        fileOut.close();
     }
-
+    displayCarOrder(johnsOrder);
     // std::cout << carOrder << std::endl;
     // std::cin >> carOrder;
 
