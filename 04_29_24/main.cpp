@@ -10,6 +10,7 @@
 // lecture activity copy the list of includes from this program and document what they are used for (what comes from them)
 
 const int TOTAL_COLORS = 13;
+const int MAX_ORDERS = 10;
 
 enum carColorType
 {
@@ -62,16 +63,76 @@ const std::string colorToStr[13] = {"Sunset Orange",
                                     "Ocean's Rip",
                                     "Glacial White"};
 
+struct carOrderListType
+{
+    carOrderType list[MAX_ORDERS];
+    int numOrders;
+};
+
 carOrderType getCarOrder();
 carColorType getColor(std::string part);
 void displayColorMenu();
 void displayCarOrder(carOrderType theOrder);
 void printCarOrder(std::ostream &out, carOrderType theOrder);
 void resetStream();
+void displayMainMenu();
 
 int main()
 {
-    carOrderType carOrder;
+
+    carOrderListType orderList;
+    orderList.numOrders = 0;
+    int menuOption = 0;
+    while (menuOption != 3 && orderList.numOrders < 10)
+    {
+        displayMainMenu();
+        std::cin >> menuOption;
+        while (!std::cin || menuOption < 1 || menuOption > 3)
+        {
+            if (!std::cin)
+            {
+                resetStream();
+            }
+            std::cout << "That is not a valid menu option." << std::endl;
+            displayMainMenu();
+            std::cin >> menuOption;
+        }
+        if (menuOption == 1)
+        {
+            std::cout << "Thank you for choosing this option. The functionality doesn't exist." << std::endl;
+        }
+        else if (menuOption == 2)
+        {
+            orderList.list[orderList.numOrders] = getCarOrder();
+            displayCarOrder(orderList.list[orderList.numOrders]);
+            char cont;
+            std::cout << "Do you want to continue with your order? ";
+            std::cin >> cont;
+            cont = toupper(cont);
+            while (cont != 'Y' && cont != 'N')
+            {
+                std::cout << "Please enter Y or N." << std::endl;
+                std::cout << "Do you want to continue with your order? ";
+                std::cin >> cont;
+                cont = toupper(cont);
+            }
+
+            if (cont == 'Y')
+            {
+                orderList.numOrders++;
+            }
+        }
+    }
+    for (int i = 0; i < orderList.numOrders; i++)
+    {
+        std::ofstream fileOut;
+        std::string lnameCpy = orderList.list[i].cusLastName;
+        std::transform(lnameCpy.begin(), lnameCpy.end(), lnameCpy.begin(), ::tolower);
+        fileOut.open(lnameCpy + ".txt");
+        printCarOrder(fileOut, orderList.list[i]);
+        fileOut.close();
+    }
+    /* carOrderType carOrder;
     carOrder.top = ROOT;
     carOrderType johnsOrder;
     johnsOrder.top = STORM;
@@ -106,7 +167,7 @@ int main()
     displayCarOrder(johnsOrder);
     // std::cout << carOrder << std::endl;
     // std::cin >> carOrder;
-
+ */
     return 0;
 }
 
@@ -169,4 +230,12 @@ void printCarOrder(std::ostream &out, carOrderType theOrder)
     out << theOrder.top << std::endl;
     out << theOrder.body << std::endl;
     out << theOrder.trim << std::endl;
+}
+
+void displayMainMenu()
+{
+    std::cout << "Please choose an option from the menu:" << std::endl;
+    std::cout << "1. Read Existing Order" << std::endl;
+    std::cout << "2. Add New Order" << std::endl;
+    std::cout << "3. Quit" << std::endl;
 }
