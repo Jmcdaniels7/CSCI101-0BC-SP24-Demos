@@ -97,9 +97,18 @@ std::string printASCIIPiles(pileType piles[], int numPiles);
 void printGamePlayArea(pileType foundations[], pileType wastes[], int numPiles, deckType &theDeck, bool drawnCard);
 void resetStream();
 choiceType displayMenu(bool drawnCard, bool waste, bool noCards);
+void processChoice(bool &drawn, choiceType choice, deckType &theDeck, pileType foundations[], pileType wastes[], int numPiles, bool &finished);
+void drawCard(deckType &theDeck);
+void playDrawnCard(deckType &theDeck, pileType foundations[], pileType wastes[], int numPiles, bool &drawnCard);
+bool playFoundation(cardType card, pileType &foundation);
+void playFromWaste(pileType foundations[], pileType wastes[]);
+void displayWaste(pileType &wastePile);
+int chooseWaste();
+int calculateScore(deckType &theDeck, pileType wastes[]);
 
 int main()
 {
+    // srand(time(0)); //uncomment for not pseudo-random numbers.
     deckType gameDeck;
     pileType foundationPiles[NUM_PILES];
     pileType wastePiles[NUM_PILES];
@@ -107,7 +116,35 @@ int main()
     setUpDeck(gameDeck, foundationPiles, NUM_PILES);
     shuffleDeck(gameDeck);
     setUpFirstFoundationCard(gameDeck, foundationPiles, NUM_PILES);
-    printGamePlayArea(foundationPiles, wastePiles, NUM_PILES, gameDeck, false);
+    bool finished = false;
+    bool drawnCard = false;
+    choiceType choice;
+    while (!finished)
+    {
+        printGamePlayArea(foundationPiles, wastePiles, NUM_PILES, gameDeck, drawnCard);
+        bool isWaste, noCards;
+        isWaste = false;
+        for (int i = 0; i < NUM_PILES; i++)
+        {
+            if (wastePiles[i].topCard > -1)
+            {
+                isWaste = true;
+                break;
+            }
+        }
+        noCards = gameDeck.remain <= 0;
+        choice = displayMenu(drawnCard, isWaste, noCards);
+        processChoice(drawnCard, choice, gameDeck, foundationPiles, wastePiles, NUM_PILES, finished);
+    }
+    int score = calculateScore(gameDeck, wastePiles);
+    if (score == 0)
+    {
+        std::cout << "You won! You scored 0 points." << std::endl;
+    }
+    else
+    {
+        std::cout << "Game Over! You scored " << score << " points." << std::endl;
+    }
 
     return 0;
 }
@@ -374,4 +411,178 @@ choiceType displayMenu(bool drawnCard, bool waste, bool noCards)
         return DISPLAY;
     }
     return FINISH;
+}
+
+void processChoice(bool &drawn, choiceType choice, deckType &theDeck, pileType foundations[], pileType wastes[], int numPiles, bool &finished)
+{
+    switch (choice)
+    {
+    case DRAW:
+        drawCard(theDeck);
+        drawn = true;
+        break;
+    case PLAYDRAW:
+        playDrawnCard(theDeck, foundations, wastes, numPiles, drawn);
+        break;
+    case PLAYWASTE:
+    case DISPLAY:
+    case FINISH:
+        finished = true;
+    }
+}
+
+void drawCard(deckType &theDeck)
+{
+    do
+    {
+        theDeck.next++;
+    } while (theDeck.cards[theDeck.next].used);
+
+    theDeck.remain--;
+}
+
+void playDrawnCard(deckType &theDeck, pileType foundations[], pileType wastes[], int numPiles, bool &drawnCard)
+{
+    char typeOfPile;
+    int p;
+    std::cout << "Do you want to play on a:" << std::endl;
+    std::cout << "F. Foundation Pile" << std::endl;
+    std::cout << "W. Waste Pile" << std::endl;
+    std::cin >> typeOfPile;
+    typeOfPile = toupper(typeOfPile);
+    while (typeOfPile != 'F' && typeOfPile != 'W')
+    {
+        std::cout << "I do not understand. I am expecting F or W." << std::endl;
+        std::cout << "Do you want to play on a:" << std::endl;
+        std::cout << "F. Foundation Pile" << std::endl;
+        std::cout << "W. Waste Pile" << std::endl;
+        std::cin >> typeOfPile;
+        typeOfPile = toupper(typeOfPile);
+    }
+    std::string pileTypeString; // std::string pileTypeString = typeOfPile == 'F' ? "foundation" : "waste";
+    if (typeOfPile == 'F')
+    {
+        pileTypeString = "foundation";
+    }
+    else
+    {
+        pileTypeString = "waste";
+    }
+    std::cout << "Which " << pileTypeString << " pile (1-4) do you want to play on? ";
+    std::cin >> p;
+    std::cout << std::endl;
+    while (!std::cin || p < 1 || p > 4)
+    {
+        if (!std::cin)
+        {
+            resetStream();
+        }
+        std::cout << "That is not a valid " << pileTypeString << " pile." << std::endl;
+        std::cout << "Which " << pileTypeString << " pile (1-4) do you want to play on? ";
+        std::cin >> p;
+        std::cout << std::endl;
+    }
+    if (typeOfPile == 'F')
+    {
+        if (playFoundation(theDeck.cards[theDeck.next], foundations[p - 1]))
+        {
+            theDeck.cards[theDeck.next].used = true;
+            drawnCard = false;
+        }
+    }
+    else
+    {
+        wastes[p - 1].cards[wastes[p - 1].topCard + 1] = theDeck.cards[theDeck.next];
+        wastes[p - 1].topCard++;
+        theDeck.cards[theDeck.next].used = true;
+        drawnCard = false;
+    }
+}
+
+bool playFoundation(cardType card, pileType &foundation)
+{
+    if (foundation.cards[foundation.topCard + 1].rank == card.rank)
+    {
+        foundation.cards[foundation.topCard + 1] = card;
+        foundation.topCard++;
+        return true;
+    }
+    else
+    {
+        std::cout << "That is an invalid play. The next card for that pile is a ";
+        std::cout << rankStr[foundation.cards[foundation.topCard + 1].rank] << std::endl;
+        return false;
+    }
+}
+
+void playFromWaste(pileType foundations[], pileType wastes[])
+{
+    int wastePileNum;
+    int foundPileNum;
+    std::cout << "Which waste pile (1-4) do you want to play from? ";
+    std::cin >> wastePileNum;
+    while (!std::cin || wastePileNum < 1 || wastePileNum > 4)
+    {
+        if (!std::cin)
+        {
+            resetStream();
+        }
+        std::cout << "That is not a valid waste pile." << std::endl;
+        std::cout << "Which waste pile (1-4) do you want to play from? ";
+        std::cin >> wastePileNum;
+    }
+    std::cout << "Which foundation pile (1-4) do you want to play on? ";
+    std::cin >> foundPileNum;
+    while (!std::cin || foundPileNum < 1 || foundPileNum > 4)
+    {
+        if (!std::cin)
+        {
+            resetStream();
+        }
+        std::cout << "That is not a valid foundation pile." << std::endl;
+        std::cout << "Which foundation pile (1-4) do you want to play on? ";
+        std::cin >> foundPileNum;
+    }
+    cardType card = wastes[wastePileNum - 1].cards[wastes[wastePileNum - 1].topCard];
+    if (playFoundation(card, foundations[foundPileNum - 1]))
+    {
+        wastes[wastePileNum - 1].topCard--;
+    }
+}
+
+void displayWaste(pileType &wastePile)
+{
+    for (int i = wastePile.topCard; i >= 0; i--)
+    {
+        std::cout << printASCIICard(wastePile.cards[i]) << std::endl;
+    }
+}
+
+int chooseWaste()
+{
+    int wastePileNum;
+    std::cout << "Which waste pile (1-4) do you want to see? ";
+    std::cin >> wastePileNum;
+    while (!std::cin || wastePileNum < 1 || wastePileNum > 4)
+    {
+        if (!std::cin)
+        {
+            resetStream();
+        }
+        std::cout << "That is not a valid waste pile." << std::endl;
+        std::cout << "Which waste pile (1-4) do you want to see? ";
+        std::cin >> wastePileNum;
+    }
+    return wastePileNum - 1;
+}
+
+int calculateScore(deckType &theDeck, pileType wastes[])
+{
+    int score = 0;
+    for (int i = 0; i < NUM_PILES; i++)
+    {
+        score += wastes[i].topCard + 1;
+    }
+    score += theDeck.remain;
+    return score;
 }
